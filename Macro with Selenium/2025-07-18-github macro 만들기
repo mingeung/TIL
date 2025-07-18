@@ -13,7 +13,8 @@
 ---
 
 ## 실행 방법
-![macro.png](attachment:4c73d136-21c9-45e6-b075-5c8ee69bfe5e:macro.png)
+
+![macro.png](attachment:40511fd5-0d21-4f3b-a4ce-cad73fd8252d:macro.png)
 
 1. 프로그램을 실행하면 GUI 창이 열린다.
 2. 다음 항목을 입력한다.
@@ -30,7 +31,7 @@
 
 ---
 
-```Java
+```
 package githubTIL_macro;
 
 import javax.swing.*;
@@ -40,7 +41,7 @@ import java.io.*;
 
 public class githubTIL_marcro {
 	public static void main(String[] args) {
-		
+
 		  SwingUtilities.invokeLater(() -> {
 	            JFrame frame = new JFrame("TIL 업로더");
 	            frame.setSize(500, 450);
@@ -124,13 +125,13 @@ public class githubTIL_marcro {
 	    }
 
 	    public static String createMarkdownFile(String folderPath, String title, String content) {
-	        String fileName = java.time.LocalDate.now() + "-" + title.replaceAll("\\s+", "-") + ".md";
+	        String fileName = java.time.LocalDate.now() + "-" + title.replaceAll("\\\\s+", "-") + ".md";
 	        String filePath = folderPath + "/" + fileName;
 
 	        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
-	            writer.write("# " + title + "\n\n");
+	            writer.write("# " + title + "\\n\\n");
 	            writer.write(content);
-	            writer.write("\n\n---\n");
+	            writer.write("\\n\\n---\\n");
 	        } catch (IOException e) {
 	            e.printStackTrace();
 	        }
@@ -141,9 +142,9 @@ public class githubTIL_marcro {
 	        String filePath = folderPath + "/" + fileName;
 
 	        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, true))) {
-	            writer.write("\n\n---\n\n");
+	            writer.write("\\n\\n---\\n\\n");
 	            writer.write(content);
-	            writer.write("\n\n");
+	            writer.write("\\n\\n");
 	        } catch (IOException e) {
 	            e.printStackTrace();
 	        }
@@ -168,7 +169,7 @@ public class githubTIL_marcro {
 	        } catch (Exception e) {
 	            e.printStackTrace();
 	        }
-		
+
 	}
 
 }
