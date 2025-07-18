@@ -179,3 +179,4 @@ public class githubTIL_marcro {
 ```
 
 ---
+\n\n---\n\n2025-07-18-githubTIL-macro.md\n\n
