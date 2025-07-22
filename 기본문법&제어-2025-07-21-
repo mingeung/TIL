@@ -1,0 +1,148 @@
+## 1️⃣ Java 프로젝트 생성 및 기본 실행
+Java 프로젝트 생성 후 src 폴더에 클래스 생성
+
+main 작성 시 sysout 입력 후 Ctrl + Space로 자동완성
+
+실행: Ctrl + F11
+
+Java의 특징: Write Once, Run Anywhere → 플랫폼 독립적
+
+## 2️⃣ 주석
+Documentation 주석: /** ... */ → 문서 생성용
+
+## 3️⃣ 변수
+카멜케이스 사용
+
+❓ 왜 변수명은 숫자로 시작하면 안 될까?
+→ long a = 1.20394L;, float b = 1.2345e24;처럼 숫자가 변수로 사용되기 때문.
+
+##4️⃣ 연산자
+or 연산자: ||
+
+##5️⃣ Switch 문
+##6️⃣ do-while 문
+##7️⃣ Sourcetree & .gitignore 설정
+.gitignore 생성 사이트에서 Windows, Eclipse, Java 선택 후 다운로드
+
+Sourcetree 사용자 이름 변경:
+
+```
+git config --global user.name "새로운 이름"
+git config --global user.email "새로운 이메일 주소"
+```
+## 8️⃣ Git Push 에러 해결
+❓ remote: Repository not found
+
+로컬 Git 계정과 GitHub 계정 불일치 문제
+
+제어판 → 기존 GitHub 계정 삭제 후 다시 로그인 후 push
+
+##9️⃣ Temp 없이 변수 값 교환하기
+```
+a = a ^ b; // XOR
+b = a ^ b;
+a = a ^ b;
+```
+원리:
+1️⃣ a = A ^ B
+2️⃣ b = (A ^ B) ^ B = A
+3️⃣ a = (A ^ B) ^ A = B
+
+## 1️⃣0️⃣ Java 입출력
+표준 출력 스트림
+System.out → 표준 출력
+
+System.in → 표준 입력
+```
+System.out.printf("정수 출력: %d \n", 100);
+System.out.printf("문자 출력: %c \n", 97);
+System.out.printf("문자 출력: %c \n", 'a');
+
+System.out.println('a' == 97); // true
+```
+문자열 + 정수형 연산
+
+```
+System.out.println('d' + 0 + 'd');   // 200
+System.out.println(100 + 1.0);       // 101.0
+System.out.println(100 / 3.0);       // 33.333...
+System.out.println(100 / 3);         // 33
+System.out.println(0.1 + 0.2 == 0.3); // false
+
+System.out.println("1000" + 123);    // "1000123"
+System.out.println('d' + 100 + "300"); // "200300"
+System.out.println('7' + 7 + "7");   // "627"
+System.out.println("7" + 7 + '7');   // "777"
+System.out.println(true + "1" + 1);  // "true11"
+
+System.out.println((int) 3.14);      // 3
+System.out.println(Integer.parseInt("1234"));
+System.out.println(Float.parseFloat("3.14"));
+System.out.println(Boolean.parseBoolean("true"));
+```
+
+## 1️⃣1️⃣ Scanner 사용
+```
+Scanner scanner = new Scanner(System.in);
+scanner.next();         // 공백 전까지
+scanner.nextLine();     // 개행 전까지
+int a = scanner.nextInt();
+float b = scanner.nextFloat();
+double d = scanner.nextDouble();
+boolean c = scanner.nextBoolean();
+System.out.println(a);
+``
+
+백준 입력 예제: 1001
+```
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        int a = scanner.nextInt();
+        int b = scanner.nextInt();
+        System.out.println(a + b);
+    }
+}
+```
+큰 수 처리: BigInteger
+
+```
+import java.math.BigInteger;
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        BigInteger a = scanner.nextBigInteger();
+        BigInteger b = scanner.nextBigInteger();
+        System.out.println(a.add(b));
+    }
+}
+```
+## 1️⃣2️⃣ 동등 연산자
+```
+System.out.println(3 == 3);       // true
+System.out.println('a' == 97);    // true
+System.out.println(0 == 0.0);     // true
+```
+## 1️⃣3️⃣ 비교 & 참조 비교
+```
+String str1 = "hello";
+String str2 = new String("hello");
+
+System.out.println(str1 == str2);          // false
+System.out.println(str1.equals(str2));     // true
+System.out.println(str2 == "hello");       // false
+```
+## 1️⃣4️⃣ 논리 연산자 & 단락 평가
+```
+int score = 70;
+System.out.println(score > 70 && score++ < 90); // false, score remains 70
+System.out.println(score);                      // 70
+
+score = 70;
+System.out.println(score < 70 || score++ < 90); // true
+System.out.println(score);                      // 71
+```
