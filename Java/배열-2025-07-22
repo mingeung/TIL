@@ -1,0 +1,271 @@
+<aside>
+💡
+
+ctrl + Alt + 방향키 : 바로 복사
+
+</aside>
+
+## 기본자료형 vs 참조자료형
+
+**1️⃣ 기본 자료형 (Primitive Type)**
+
+**개념:**
+
+- 데이터를 **값 자체로 저장**하는 자료형
+- **스택(stack)** 영역에 직접 값이 저장됨
+- 크기가 고정되어 있고, 빠르게 처리 가능
+- `==` 비교 시 값 자체를 비교
+
+**종류 (8가지):**
+
+| 종류 | 크기 | 예시 |
+| --- | --- | --- |
+| `byte` | 1 byte | `byte b = 10;` |
+| `short` | 2 byte | `short s = 20;` |
+| `int` | 4 byte | `int i = 100;` |
+| `long` | 8 byte | `long l = 1000L;` |
+| `float` | 4 byte | `float f = 3.14f;` |
+| `double` | 8 byte | `double d = 3.1415;` |
+| `char` | 2 byte | `char c = 'A';` |
+| `boolean` | 1 byte (사실 JVM에 따라 다름) | `boolean flag = true;` |
+
+✅ **값 그 자체를 다룬다**는 것이 핵심
+
+---
+
+**2️⃣ 참조 자료형 (Reference Type)**
+
+**개념:**
+
+- **객체의 주소(참조값)를 저장**하는 자료형
+- **힙(heap)** 영역에 실제 데이터가 저장되며, 변수에는 **주소값(참조값)이 스택에 저장**
+- 크기가 고정되어 있지 않음 (객체의 크기에 따라 다름)
+- `==` 비교 시 **주소값을 비교** (동일한 객체인지 여부 확인)
+- 값 자체 비교는 `.equals()` 메서드를 사용
+
+**예시:**
+
+- `String`
+- `Array`
+- `Class` (사용자 정의 클래스)
+- `Scanner`, `BigInteger`, `List`, `Map` 등 모든 객체
+
+## 배열 선언 방법
+
+- `데이터타입[] 배열이름;`
+- `데이터타입 배열이름[];`
+
+---
+
+**자료형별 배열 선언 표**
+
+| 자료형 | 배열 이름(변수명) | 배열 선언문 |
+| --- | --- | --- |
+| `int` | `intArray` | `int[] intArray;` |
+| `char` | `charArray` | `char[] charArray;` |
+| `boolean` | `boolArray` | `boolean[] boolArray;` |
+| `String` | `strArray` | `String[] strArray;` |
+| `float` | `floatArray` | `float[] floatArray;` |
+
+## 배열의 생성과 초기화
+
+- 자료형[] 배열이름 = new 자료형[길이];
+- 자료형[] 배열이름 = new 자료형[] {값1, 값2, 값3, 값4};
+- 자료형[] 배열이름 = {값1, 값2, 값3, 값4};
+
+### 오류경우
+
+```java
+	int[] arr5 = new int[10] {1, 2, 3, 4, 5};
+	System.out.println(Arrays.toString(arr5));
+```
+
+길이를 직접 명시해줄 수 없음!
+
+→ 길이를 5로 넣든 10으로 넣든 오류가 생긴다.
+
+### 재할당
+
+```java
+	String[] arr6 = {"1", "2", "3"};
+	arr6 = new String[] {"4", "5", "6"}; //재할당 가능
+```
+
+## for-each
+
+```java
+	//for-each
+	//for (요소 : 반복할 것)
+
+for(int x : intArray) {
+	System.out.println(x);
+}
+```
+
+## 얕은 복사
+
+- 객체 내부의 참조형 변수는 원본 객체의 참조를 복사
+- 원본 객체와 복사본이 같은 참조를 가리키므로, 하나가 변경되면 다른 하나도 변경됨
+
+```java
+public class 얕은복사 {
+	public static void main(String[] args) {
+		int[] original = {1, 2, 3}
+		int[] shallowCopy = original; //얕은 복사(참조 공유)
+		
+		shallowCopy[0] = 10;
+	}
+}
+```
+
+## 깊은 복사
+
+원본값과 복사값은 별개의 값을 갖는다.
+
+```java
+public class 깊은복사 {
+	public static void main(String[] args) {
+		int[] original = {1, 2, 3}
+		int[] deepCopy = new int[original.length];
+		
+		for(int i = 0; i <original.length; i++) {
+			deepCopy[i] = original[i];		
+		}
+		deepCopy[0] = 10;
+	}
+}
+```
+
+### 배열의 복사 메서드
+
+- **Arrays.copyOf()** : 배열을 복사하여 새로운 배열을 생성
+
+```java
+int[] original = {10, 20, 30};
+int[] copy = Arrays.copyOf(original, original.length);
+System.out.println(Arrays.toString(copy));
+```
+
+- **Arrays.copyOfRange() :** 배열의 특정 범위를 복사
+
+```java
+int[] numbers = {10, 20, 30, 40, 50};
+int[] subArrays = Arrays.copyOfRange(numbers, 1, 4);
+System.out.println(Arrays.toString(subArrays));
+```
+
+- System.arraycopy(원본배열, 원본배열시작점, 복사배열, 복사배열의시작점, 복사길이
+
+```java
+System.arraycopy(Object src, int srcPos, Object dest, int destPos, int length);
+```
+
+## 다차원 배열
+
+- 2차원 배열의 모든 요소는 크기가 일정하지 않아도 된다.
+
+```java
+
+public class Array06_2차원배열_선언및생성 {
+	public static void main(String[] args) {
+	//선언하는 방법
+		int[][] arr1;
+		int arr2 [][];
+		
+		//초기화
+		int[][] arr4 = new int[2][3]; //행:2, 열:3
+		
+		System.out.println(Arrays.toString(arr4[0])); //이래야 제대로 출력이 된다.
+		System.out.println(arr4[0]); //이러면 알 수 없는 문자가 나옴
+		
+		
+		//for-each로 확인할 수 있음
+		for (int[] a: arr4) {
+			System.out.println(Arrays.toString(a));
+			
+		}
+		
+		//1차원 배열의 개수만 지정하고, 크기를 지정하지 않을 수 있다.
+		int[][] arr5 = new int[5][];
+		System.out.println(Arrays.deepToString(arr5));
+		//[null, null, null, null, null]
+		
+	}
+}
+```
+
+### 배열 print하는 법
+
+- 1차원 배열 : `Arrays.toString();`
+- 다차원 배열 : `Arrays.deepToString();`
+
+# 리스트
+
+### 배열보다 더 쉽게 "값 추가"하려면 `ArrayList` 사용
+
+배열은 크기가 고정적이다.
+
+값을 동적으로 추가/삭제할 필요가 있다면 배열 대신 **`ArrayList`** 사용이 일반적입니다.
+
+```java
+import java.util.ArrayList;
+
+public class Main {
+    public static void main(String[] args) {
+        ArrayList<Integer> list = new ArrayList<>();
+
+        list.add(10);
+        list.add(20);
+        list.add(30);
+        list.add(40);
+
+        System.out.println(list); // [10, 20, 30, 40]
+
+        list.add(1, 15); // 1번째 인덱스에 15 삽입
+        System.out.println(list); // [10, 15, 20, 30, 40]
+    }
+}
+
+```
+
+### 리스트에서 가자 큰 값 구하기
+
+### `Collections.max()` 사용 (더 간단)
+
+```java
+java
+복사편집
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+public class Main {
+    public static void main(String[] args) {
+        List<Integer> list = new ArrayList<>();
+        list.add(10);
+        list.add(5);
+        list.add(23);
+        list.add(7);
+
+        int max = Collections.max(list);
+
+        System.out.println("가장 큰 값: " + max); // 23
+    }
+}
+
+```
+
+## Java `for`문에서 변수 여러 개 선언 가능?
+
+✅ **가능하다.**
+
+```java
+java
+복사편집
+for (int i = 0, j = 10; i < 10 && j > 0; i++, j--) {
+    // 실행문
+}
+
+```
+
+- `for`문의 **초기화 부분**에서는 `,` (콤마)를 사용해 여러 변수를 선언하고 초기화할 수 있다.
