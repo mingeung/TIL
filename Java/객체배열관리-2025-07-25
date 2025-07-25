@@ -1,0 +1,761 @@
+# JVM 메모리구조
+
+## JVM( Java Virtual Machine)
+
+- 목적 : 자바 프로그램이 실행되는 환경 제공. 플랫폼 종속적
+- 메모리를 체계적으로 관리하기 위해 여러 영역으로 나뉘어져 있음
+    - 메서드 영역
+    - 힙 영역
+    - 스택 영역
+    - PC 레지스터
+    - 네이티브 메서드 스택
+- GC(Garbage Collection) : JVM은 가비지 컬렉터를 통해 자동으로 메모리 관리, 사용되지 않는 객체를 메모리에서 해제
+
+![image.png](attachment:0d989908-0f60-4b33-ada6-03275489e14a:image.png)
+
+![image.png](attachment:4af985bd-48f9-4eb3-98e1-de5d2ea680ac:image.png)
+
+### 메서드 영역(Method Area)
+
+- 클래스 정보를 저장하는 영역
+- 정적 변수(static, fianl), 상수, 메서드 등이 저장됨
+- 모든 스레드가 공유
+- 클래스 로더에 의해 클래스가 로드될 때 저장되는 공간
+
+ex)  교실의 칠판 같은 곳
+
+- 모든 학생(스레드)이 볼 수 있는 공용의 공간
+- 수업 내용(클래스 정보), 공식(메서드), 상수 등을 적어두는 공
+
+### 힙 영역(Heap Area)
+
+- 객체 인스턴스를 저장하는 공간
+- 모든 스레드가 공유
+- 문자열 상수 풀 관리
+
+ex) 공용 창고
+
+- 만든 물건(객체)들을 보관하는 공간
+- 모든 사람(스레드)가 사용할 수 있는 공용 공간
+- 안 쓰는 물건은 청소부(GC)가 치워준다.
+
+```java
+String name = new String("홍길동"); //"홍길동"이라는 객체가 힙에 저장된다.
+```
+
+### 스택 영역(Stack Area)
+
+- 지역 변수, 메서드 호출 시 사용되는 값, 연산 결과 저장
+- 메서드 호출 시 스택 프레임이 생성되며, 끝나면 스택 프레임 제거
+- 스레드 마다 생성 → 작업 중인 문서 or 책상
+
+ex) 각자의 책상 서랍
+
+- 각 사람(스레드)마다 하나씩 가지고 있음
+- 임시로 필요한 것들(지역변수)을 보관
+- 일이 끝나면 자동으로 정리됨
+
+```java
+public void calculate(){
+	int x = 10; //x는 스택에 저장
+	int y = 10; //y는 스택에 저장
+	//메서드가 끝나면 x,y는 자동으로 사라짐
+}
+//main 메서드에
+calculate(); //호출... 복귀하면 x,y가 자동으로 사라짐
+```
+
+### PC 레지스터(Program Counter Register)
+
+- 현재 실행 중인 메모리의 주소를 저장하는 영역
+- 프로그램 실행 흐름을 제어하는 데 사용
+- 스레드마다 생성 → 지금 하고 있는 작업 위치
+
+ex) 인덱스 책갈피 역할
+
+- 지금 어디까지 읽었는지 표시(각자 = 스레드마다 자신의 책갈피를 가지고 있다.)
+
+### 네이티브 메서드 스택(Native Method Stack)
+
+- 네이티브 언어(C/C++)로 작성된 메서드 호출 시 사용하는 메모리 영역
+
+ex) 통역사의 메모장
+
+- 다른 언어(C/C++)로 된 것을 실행할 때 사용(각자 = 스레드마다 하나씩 가지고 있는 공간)
+
+### garbage Collection (GC)
+
+GC: 자바의 메모리 관리 시스템, 사용하지 않는 객체(힙 영역)를 찾아서 제거!
+
+→ how? 찾는 방법 : 스택 영역에서 더 이상 참조하지 않는 객체이면 삭제!
+
+```java
+
+// 예시 1: GC가 청소하는 경우
+String message = new String("안녕");  // "안녕" 객체 생성
+message = new String("반가워");      // "안녕"은 이제 안 씀 → GC가 청소
+
+// 예시 2: GC가 청소하지 않는 경우
+String greeting = new String("안녕");
+String hello = greeting;  // 둘 다 "안녕"을 가리킴
+// "안녕"은 아직 사용 중이므로 청소하지 않음
+```
+
+### GC의 장단점
+
+**장점**
+
+- 개발자가 직접 메모리를 관리하지 않아도 됨
+- 메모리 누수를 방지
+
+**단점**
+
+- 언제 실행될지 정확히 알 수 없음
+- 실행될 때 잠시 프로그램이 멈출 수 있음
+
+(stop-the-world)
+
+## 객체 생성과 메모리 할당
+
+![image.png](attachment:76330f44-2c02-406a-965d-9a0b7e05daba:image.png)
+
+- 힙 영역에는 문자열을 따로 저장할 수 있는 공간이 있다.
+
+---
+
+# 사용제한자(Modifier)
+
+재미있게 설명한 글 [https://velog.io/@7_06com/Java-static-final-static-final-이게-무엇이고-왜-쓸까](https://velog.io/@7_06com/Java-static-final-static-final-%EC%9D%B4%EA%B2%8C-%EB%AC%B4%EC%97%87%EC%9D%B4%EA%B3%A0-%EC%99%9C-%EC%93%B8%EA%B9%8C)
+
+> 사용제한자란? 변수나 메서드의 특성을 정해주는키워드
+> 
+
+## final - “변경 금지”
+
+한번 지정하면 바꿀 수가 없음 (변수가 가지고 있는 값을 고정)
+
+```java
+// 1. final 변수 = 상수 (바꿀 수 없는 값)
+final int MAX_SCORE = 100;  // 최대 점수는 100점
+// MAX_SCORE = 200;  // ❌ 에러! 바꿀 수 없음
+
+//아래 두 경우는 가능
+final Person person1 = new Person("홍길동". 20); 
+// 주소를 변경할 수 없게 상수로 만드는 것이지 그 안에 있는 값을 바꾸는 것은 가능
+person1.name = "김철수"; //가능
+
+Person person2 = person1; //가능
+person2.age = 30; //가능
+
+// 2. final 메서드 = 수정 금지
+class Parent {
+    public final void importantRule() {
+        System.out.println("이 규칙은 바꿀 수 없어요");
+    }
+}
+
+// 3. final 클래스 = 상속 금지
+final class FinalReport {
+    // 이 클래스는 자식을 만들 수 없음
+}
+```
+
+## static - “클래스 수준에서 공유되는 데이터”
+
+→ ex) 아파트 공용시설 (놀이터, 휴게소)
+
+(아파트 세대에 속해있지 않더라도 해당되는 값을 사용 가능!)
+
+- 클래스 자체에 속한다는 특징
+    - 클래스에 선언한다.
+    - 클래스 이름으로 바로 호출도 가능(=권장) `MyClass.staticVariable` ← 가능
+        
+        (객체를 통해서도 가능하기도 하다… `obj1.staticVariable`)
+        
+    - JVM 메서드 영역에 저장
+
+static  제한자를 통해서 변수, 메서드, 초기화 블록을 선언해서 사용이 가능
+
+### static 변수
+
+클래스를 통해서 공용으로 사용하게 되는 데이터에 활용한다. 
+
+코드 노션에서 복사해오기
+
+```java
+Public class Person {
+		static int pCount = 0; // static 변수 (=클래스 변수)
+		static String bloodColor = "RED"; // 클래스를 통해서 공용으로 사용하게 되는 데이터에 활용!
+		String name;       // 인스턴스 변수
+}
+
+Public class PersonTest{
+    public static void main(String[] args){
+	    Person p = new Person();
+	    p.name = "Kim";
+	    Person.pCount++; // 카운트 1로 증가...
+	    // p.pCount++;      // 카운트 2로 증가...
+	    
+	    Person p2 = new Person();
+	    p2.pCount++; // 카운트 2로 증가....
+	    
+	    System.out.println("인구 수:" + Person.pCount); // "인구 수: 2"
+    }
+}
+```
+
+# static 메서드
+
+```java
+public class Calculator {
+   // static 메서드 예시 (유틸리티 만들 때 많이 사용)
+   public static int add(int a, int b) {
+		   // this.인스턴스변수; <- 이렇게 인스턴스나 내부의 객체 필드를 사용하는 행위! x
+       return a + b;
+   }
+
+   public static void main(String[] args) {
+       // 객체 생성 없이 호출 가능 (객체와 무관하게 동작)
+       int result = Calculator.add(5, 3);
+       System.out.println(result); // 8 출력
+   }
+}
+```
+
+### static 블록
+
+```java
+class Counter {
+    // static 변수
+    public static int sCount;
+    // non-static 변수 
+    public int iCount;
+    
+    // 초기화 블록
+    // 클래스 로드 시에 한번만 실행되는 초기화 블록
+    static {
+			  System.out.println("Counter 클래스가 로드되었어요!");
+        sCount = 10;
+    }
+}
+
+// main 메서드에다가..
+
+System.out.println("아직은 Counter 클래스가 로드되지 않았네요??");
+Counter counter = new Counter(); // Counter 클래스가 로드되었어요!
+```
+
+# Static 키워드
+
+## Static
+
+- 메모리에 미리 올려두는 것
+- 클래스 수준에서 공유되는 멤버(필드, 메서드, 중첩 클래스)를 정의하는 데 사용
+- static 키워드를 작성하면 객체(인스턴스)와 무관하게 클래스 자체에 속함
+- 특정 객체에 속하지 않고 모든 객체가 동일한 static 멤버를 참조
+
+## static 필드 (클래스 변수)
+
+- 자바 기본 코드 작성
+    
+    ```java
+    //Person.java
+    package modified01_static;
+    
+    public class Person {
+    		static int pCount;
+    		
+    		String name;
+    		int age;
+    		String hobby;
+    
+    }
+    
+    //PersonTest.java
+    package modified01_static;
+    
+    public class PersonTest {
+    	public static void main(String[] args) {
+    		Person p = new Person();
+    		
+    		System.out.println(p.pCount);
+    	}
+    
+    }
+    ```
+    
+
+```java
+package modified01_static;
+
+public class PersonTest {
+	public static void main(String[] args) {
+		Person p = new Person();
+		
+		System.out.println(p.pCount++);
+		
+		Person p2 = new Person();
+		System.out.println(p2.pCount);//2로 된다. 메서드 영역에서 가져오기 때문에
+		
+		//인스턴스가 아니라 클래스로 접근하는 게 좋다.
+		System.out.println(Person.pCount);
+	}
+}
+```
+
+### Static 메서드
+
+- 클래스 이름을 통해 직접 호출할 수 있는 메서드
+
+```java
+		//이렇게 정의해놓으면
+		public static void study() {
+			
+			
+		}
+		
+		
+		//이렇게 클래스로 호출할 수 있다.
+		Person.study();
+```
+
+### static 블록(초기화 블록)
+
+- 정적 블록은 **클래스 로드 시 한 번만 실행되는 초기화 블록**
+- 정적 필드 초기화에 사용
+
+```java
+class Counter {
+    // static 변수
+    public static int sCount;
+
+    // non-static 변수
+    public int iCount;
+
+    // 초기화 블록
+    static {
+        sCount = 10;
+    }
+}
+```
+
+## static 주의 사항
+
+- **static 영역에서는 non-static 영역을 직접 접근할 수 없음**
+
+```java
+public class Main {
+
+    String str = "문장";
+
+    public static void main(String[] args) {
+        System.out.println(str); // 오류 발생
+    }
+}
+```
+
+---
+
+- **non-static 영역에서는 static 영역에 대한 접근이 가능**
+
+```java
+public class Main {
+
+    static String str = "문장";
+
+    public void print() {
+        System.out.println(str);
+    }
+}
+```
+
+### 일반적인 클래스 레이아웃
+
+```java
+package com.ssafy.java;      // package 선언부
+
+import java.sql.*;           // import 선언부
+
+public class Person {        // class 선언부
+
+    static int personCount;  // class 변수
+
+    String name;             // 멤버 변수
+    int age;
+    String hobby;
+
+    static {                 // 초기화 블록
+        personCount = 10;
+    }
+
+    public Person(String name, int age, String hobby) { // 생성자
+        this.name = name;
+        this.age = age;
+        this.hobby = hobby;
+    }
+
+    public String info() { // 멤버 메서드
+        return "제 이름은 " + name + " 입니다.";
+    }
+}
+
+```
+
+# 접근제한자
+
+## Package
+
+- 클래스와 인터페이스를 묶는 디렉토리(폴더) 구조
+- 클래스 파일 첫번째 줄에 package 키워드를 사용하여 선언(생략 시 default package)
+- .(dot)을 이용하여 패키지를 구분
+- 쉬운 설명 : 관련된 클래스를 모아놓는 폴더 역할(계층적 구조를 가진다.)
+- why?
+    1. 관련 클래스를 체계적으로 관리
+    2. 이름이 같은 클래스를 구분하는 용도
+
+## import
+
+- 다른 패키지에 클래스를 사용하기 위해서는 import 과정이 필요
+- 단일 또는 전체 패키지 import 가능
+
+## 캡슐화 (Encapsulation)
+
+- **필드와 메서드를 하나의 단위로 묶고 외부로부터 데이터를 숨기며 안전하게 보호하는 것**
+- 정보 은닉 → 내부 데이터를 외부에서 직접 접근하지 못하게 하고 특정 메서드를 통해서만 접근하도록 제한
+
+---
+
+# 접근 제한자(Access Modifier)
+
+✅ **접근 제한자**
+
+- 클래스, 메서드, 변수 등에 대한 접근 범위를 지정
+- 캡슐화와 정보은닉을 가능하게 함
+- 접근 제한자는 하나만 작성이 가능
+
+✅ **접근 제한자 종류**
+
+- `public` : 모든 위치에서 접근 가능  ex) 대문(누구나 들어올 수 있음)
+- `protected` : 같은 패키지 또는 패키지가 달라도 상속 관계에서 접근 가능 ex) 거실(가족과 친적)
+- `default (package-private)` : 같은 패키지 안에서만 접근 가능  ex) 안방(같은 집 식구들만)
+- `private` : 같은 클래스 내부에서만 접근 가능 ex) 개인 금고(나만 열 수 있음)
+
+- **최상위 클래스 (외부 클래스)** : `public` 또는 `default` 만 사용 가능
+- **중첩 클래스 (내부 클래스)** : 4가지 종류 모두 사용 가능
+
+| 수식어 | 클래스 내부 | 동일 패키지 | (다른 패키지 내의) 하위 클래스 | 다른 패키지 |
+| --- | --- | --- | --- | --- |
+| `private` | O |  |  |  |
+| `(default)` | O | O |  |  |
+| `protected` | O | O | O |  |
+| `public` | O | O | O | O |
+
+## Private
+
+```java
+package modifier02_private;
+
+//private : 같은 클래스 내부에서만 접근이 가능!
+public class Person {
+	private String name;
+	private int age;
+	
+	private void info() {
+		this.name = "Yang"; //나는 내부이니까 접근이 가능하다.	
+	}
+}
+```
+
+```java
+package modifier02_private;
+
+public class PersonTest {
+	public static void main(String[] args) {
+		Person p = new Person();
+		p.age = 10; //private이기 때문에 사용하지 못한다.
+	}
+}
+
+```
+
+## default
+
+```java
+package modifier03_default;
+
+//default 같은 패키지 안에서 접근이 가능
+public class Person {
+	 String name;
+	 int age;
+	
+	 void info() {
+		this.name = "Yang"; //나는 내부이니까 접근이 가능하다.	
+	}
+
+}
+
+```
+
+```java
+package modifier03_default;
+
+public class PersonTest {
+	public static void main(String[] args) {
+		Person p = new Person();
+		p.age = 10; //default 같은 패키지 접근 가능
+	}
+
+}
+
+///-------------------
+package modifier03_default2;
+
+import modifier03_default.Person;
+
+public class PersonTest {
+	public static void main(String[] args) {
+		Person p = new Person();
+		p.age = 10; //default 같은 패키지 접근 가능 -> 다른 패키지에서 import했기 때문에 오류 발생
+	}
+
+}
+
+```
+
+## Protected
+
+```java
+package modifier04_protected2;
+
+import modifier04_protected.Person;
+
+public class PersonTest {
+	public static void main(String[] args) {
+		Person p = new Person();
+		p.age = 10; //protected는 다른 패키지라면 상속 관계에서 접근 가. 그래서 이건 오류남ackage modifier04_protected2;
+import modifier04_protected.Person;
+public class PersonTest {	public static void main(String[] args) {		Person p = new Person();		p.age = 10; //protected는 다른 패키지라면 상속 관계에서 접근 가. 그래서 이건 오류남
+		//import : ctrl+ shift + o
+	}
+
+}
+
+```
+
+아래는 가능(상속을 받았기 때문에) 근데 왜 PersonTest() 인스턴스를 하나 더 생성하는지 모르겠다. 
+
+→ PersonTest가 상속을 받았기 때문에 Person이 아니라 여기의 인스턴스를 생성해야 하는 것일듯
+
+```java
+package modifier04_protected2;
+
+import modifier04_protected.Person;
+
+public class PersonTest extends Person{
+	public static void main(String[] args) {
+		Person p = new Person();
+		
+		PersonTest pt = new PersonTest();
+		pt.age = 100;
+		pt.info();
+	}
+
+}
+
+```
+
+## Public
+
+```java
+package modifier04_protected;
+
+//public : 오픈
+public class Person {
+	 public String name;
+	 public int age;
+	
+	 public void info() {
+		this.name = "Yang"; //나는 내부이니까 접근이 가능하다.	
+	}
+
+}
+
+```
+
+```java
+package modifier04_protected;
+
+public class PersonTest {
+	public static void main(String[] args) {
+		Person p = new Person();
+		p.age = 10; //public은 접근 가능!
+		p.info();
+	}
+
+}
+
+```
+
+## 접근자 설정자 / getter, setter
+
+> private 필드에 안전한 접근을 제공하도록 하는 메서드들 (get 필드명, set 필드명)
+OOP의 **캡슐화** 원칙을 준수하기 위해 활용한다.
+> 
+
+<aside>
+💡
+
+캡슐화(encapsulation): 외부에서 필드에 대한 직접 접근을 막아서 잘못된 데이터 변경을 방지하기 위한 목적 → how? 내부의 필드는 private를 이용해 숨기고, 외부에서는 getter, setter를 통해 접근할 수 있도록 한다.
+
+</aside>
+
+```java
+
+public class Person {
+    private String name;
+    private int age;
+
+    // Getter
+    public String getName() {
+        return name;
+    }
+
+    // Setter
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        if(age >= 0) { // 유효성 검사
+            this.age = age;
+        }
+    }
+}
+```
+```
+
+# 객체배열 관리
+
+✅ **객체 배열 관리**
+
+- 여러 객체를 하나의 배열로 묶어 관리하는 방식
+- 객체 배열의 요소는 객체 참조 값을 저장
+- 기본 값은 `null`로 초기화
+- 객체를 추가, 조회, 수정, 삭제할 수 있음 (CRUD)
+- 싱글턴 패턴을 사용하여 관리할 수 있음
+
+> ※ 객체 배열의 요소는 객체 참조 값을 저장 → 다차원 배열
+> 
+
+---
+
+✅ **싱글턴 패턴 (Singleton Pattern)**
+
+- 객체를 하나만 생성하도록 보장하는 디자인 패턴
+- 객체의 유일성 보장 → 하나의 인스턴스만 생성 (전역적으로 동일한 객체 공유)
+- 생성자를 `private`으로 만들어 클래스 내부에서만 생성 가능
+- 정적 메서드를 통해 전역적으로 접근 가능
+
+```java
+//싱글턴 패턴 (단 하나의 인스턴스로만 생성-공유 하도록!)
+public class Manager {
+		//private 필드를 하나 지정
+		//->해당 클래스의 인스턴스 하나를 할당
+    private static Manager manager = new Manager();
+
+	//다른 곳에서는 생성할 수가 없도록 막기!
+	//-> 기본 생성자를 private 접근제한자 달기
+    private Manager() {}
+		
+		//이미 만들어진 인스턴스를 가져다 쓸 수 있는 메서드
+    public static Manager getManager() {
+        return manager;
+    }
+}
+```
+
+```java
+public class Main {
+    public static void main(String[] args) {
+        President p1 = President.getInstance();
+        President p2 = President.getInstance();
+        // 같은 객체를 가리킨다...!
+        System.out.println(p1 == p2); // true
+    }
+}
+```
+
+### Eager Initialization (미리 만들기)
+
+```java
+public class President {
+    // 1. 미리 하나 만들어 놓음
+    private static final President instance = new President();
+
+    // 2. 다른 곳에서 new로 만들지 못하게 막음
+    private President() {
+        System.out.println("대통령이 선출되었습니다.");
+    }
+
+    // 3. 만들어진 것을 가져다 쓸 수 있게 함
+    public static President getInstance() {
+        return instance;
+    }
+
+    public void announce(String message) {
+        System.out.println("대통령 발표: " + message);
+    }
+}
+
+// 사용 예시
+President president1 = President.getInstance();
+President president2 = President.getInstance();
+// president1과 president2는 같은 객체를 가리킴
+
+president1.announce("국민 여러분!");
+```
+
+### (참고) Lazy Initialization (필요할 때 만들기)
+
+```java
+public class PrinterManager {
+    // 1. 처음엔 비어있음
+    private static PrinterManager instance;
+
+    // 2. 다른 곳에서 new로 만들지 못하게 막음
+    private PrinterManager() {
+        System.out.println("프린터 관리자 생성");
+    }
+
+    // 3. 필요할 때 만들어서 줌
+    public static PrinterManager getInstance() {
+        if (instance == null) {  // 아직 안 만들어졌으면
+            instance = new PrinterManager();  // 만들기
+        }
+        return instance;  // 이미 있으면 그걸 줌
+    }
+
+    public void print(String document) {
+        System.out.println("인쇄 중: " + document);
+    }
+}
+
+// 사용 예시
+PrinterManager manager = PrinterManager.getInstance();
+manager.print("보고서.pdf");
+
+```
+
+### (참고) Eager vs Lazy 비교
+
+- **Eager (미리 만들기)**
+    - 장점: 빠르고 안전함
+    - 단점: 안 쓸 수도 있는데 미리 만들어 놓음
+
+- **Lazy (필요할 때 만들기)**
+    - 장점: 필요할 때만 만들어서 효율적
+    - 단점: 처음 사용할 때 약간 느릴 수 있음
